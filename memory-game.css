@@ -1,5 +1,7 @@
 /* you can add to or change this. */
-
+h1{
+  text-align: center;
+}
 #game div {
   border: 1px solid black;
   width: 100px;
@@ -8,7 +10,12 @@
   display: inline-block;
 }
 
-
-.facedown {
-  background-color: white !important;
+.cards-list{
+  display: flex;
+  flex-wrap: wrap;
+  flex-basis: 50%;
+  width:800px;
+  margin: 0 auto;
 }
+
+

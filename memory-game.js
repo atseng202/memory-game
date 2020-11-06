@@ -49,13 +49,13 @@ function createCards(colors) {
     newCard.classList.add(...cardClasses);
     newCard.id = `card-${idx}`;
     idx += 1;
-    
+
     // can access card color with data-color but may not use 
     newCard.dataset.color = color;
 
     // Add click event listener
     newCard.addEventListener("click", handleCardClick);
-   
+
     // Append card to our DOM
     let cardsList = document.querySelector(".cards-list");
     cardsList.append(newCard);
@@ -66,17 +66,68 @@ function createCards(colors) {
 
 function flipCard(card) {
   // ... you need to write this ...
+  // first of classlist is "card", second of classList is color 
+  card.style.backgroundColor = card.classList[1];
 }
 
 /** Flip a card face-down. */
 
 function unFlipCard(card) {
   // ... you need to write this ...
-  // MAYBE DO: card.style.backgroundColor = "white";
+  card.style.backgroundColor = "white";
 }
 
 /** Handle clicking on a card: this could be first-card or second-card. */
 
+// track click and matched
+let clicks = 0;
+let clickedCards = [];
+let matched = new Set();
+
 function handleCardClick(evt) {
   // ... you need to write this ...
+  // change color if the click is less than 2 and it is not Matched 
+  let isMatched = matched.has(evt.target.id);
+  if (clicks < 2 && !isMatched) {
+    flipCard(evt.target);
+    console.log(clicks);
+    clickedCards.push(evt.target);
+    clicks++;
+    //prevent same card clicking 
+    if (clickedCards.length === 2 && clickedCards[0].id === evt.target.id) {
+      clicks--;
+      clickedCards.pop();
+    }
+    console.log(clickedCards);
+  }
+
+  if (clicks === 2) {
+    //if cards are the same, flip
+    let firstCard = clickedCards[0];
+    let secondCard = clickedCards[1];
+    if (firstCard.classList[1] !== secondCard.classList[1]) {
+      console.log('color1', firstCard.classList[1]);
+      console.log('color2', secondCard.classList[1]);
+      // set timeout and unflip 
+      setTimeout(function () {
+        unFlipCard(firstCard);
+        unFlipCard(secondCard);
+        //clear
+        clicks = 0;
+        clickedCards = [];
+      }, FOUND_MATCH_WAIT_MSECS)
+      console.log("clearing clicks")
+
+
+    }
+    // if matching colors, do not unflip, clear 
+    else {
+      matched.add(firstCard.id);
+      matched.add(secondCard.id);
+      clicks = 0;
+      clickedCards = [];
+    }
+
+  }
+
 }
