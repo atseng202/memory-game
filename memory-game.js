@@ -8,11 +8,6 @@ const COLORS = [
   "red", "blue", "green", "orange", "purple",
 ];
 
-const colors = shuffle(COLORS);
-
-createCards(colors);
-
-
 /** Shuffle array items in-place and return shuffled array. */
 
 function shuffle(items) {
@@ -81,43 +76,44 @@ function unFlipCard(card) {
 
 // track click and matched
 let clicks = 0;
+let allPossibleClicks = 0;
 let clickedCards = [];
 let matched = new Set();
 
 function handleCardClick(evt) {
   // ... you need to write this ...
-  // change color if the click is less than 2 and it is not Matched 
+  // change color if the click is less than 2 and it is not Matched
+  allPossibleClicks += 1; 
+  console.log("clicked but not flipped", evt.target.id);
   let isMatched = matched.has(evt.target.id);
   if (clicks < 2 && !isMatched) {
     flipCard(evt.target);
-    console.log(clicks);
+    
     clickedCards.push(evt.target);
     clicks++;
     //prevent same card clicking 
     if (clickedCards.length === 2 && clickedCards[0].id === evt.target.id) {
       clicks--;
+      allPossibleClicks -= 1;
       clickedCards.pop();
     }
     console.log(clickedCards);
   }
 
-  if (clicks === 2) {
+  if (clicks === 2 && allPossibleClicks === 2) {
     //if cards are the same, flip
     let firstCard = clickedCards[0];
     let secondCard = clickedCards[1];
     if (firstCard.classList[1] !== secondCard.classList[1]) {
-      console.log('color1', firstCard.classList[1]);
-      console.log('color2', secondCard.classList[1]);
       // set timeout and unflip 
       setTimeout(function () {
         unFlipCard(firstCard);
         unFlipCard(secondCard);
-        //clear
         clicks = 0;
         clickedCards = [];
+        allPossibleClicks = 0;
+        console.log("Unflipped cards: ", firstCard, secondCard)
       }, FOUND_MATCH_WAIT_MSECS)
-      console.log("clearing clicks")
-
 
     }
     // if matching colors, do not unflip, clear 
@@ -126,8 +122,30 @@ function handleCardClick(evt) {
       matched.add(secondCard.id);
       clicks = 0;
       clickedCards = [];
+      allPossibleClicks = 0;
     }
 
   }
+
+}
+
+
+// Starts a game
+function handleStartGame(evt) {
+  console.log("Starting game!");
+  // prior to starting the game with this button, the html should just show the button / no cards
+  // When starting game, the cards will now be visible
+  // the button will disappear
+  // and game state should be reset 
+  // toggle a class like inProgress which now displays the game aka display: flex for .cards-list
+
+  // OR just start the game and create the cards once this button is pressed
+  const colors = shuffle(COLORS);
+
+  createCards(colors);
+}
+
+// reset game state
+function resetBoard() {
 
 }
