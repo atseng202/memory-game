@@ -41,8 +41,24 @@ function shuffle(items) {
 function createCards(colors) {
   const gameBoard = document.getElementById("game");
 
+  let idx = 0;
   for (let color of colors) {
     // missing code here ...
+    let newCard = document.createElement("div");
+    const cardClasses = ["card", color];
+    newCard.classList.add(...cardClasses);
+    newCard.id = `card-${idx}`;
+    idx += 1;
+    
+    // can access card color with data-color but may not use 
+    newCard.dataset.color = color;
+
+    // Add click event listener
+    newCard.addEventListener("click", handleCardClick);
+   
+    // Append card to our DOM
+    let cardsList = document.querySelector(".cards-list");
+    cardsList.append(newCard);
   }
 }
 
@@ -56,6 +72,7 @@ function flipCard(card) {
 
 function unFlipCard(card) {
   // ... you need to write this ...
+  // MAYBE DO: card.style.backgroundColor = "white";
 }
 
 /** Handle clicking on a card: this could be first-card or second-card. */
