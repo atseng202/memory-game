@@ -37,6 +37,9 @@ function createCards(colors) {
   const gameBoard = document.getElementById("game");
 
   let idx = 0;
+  let cardsList=document.createElement('ul');
+  cardsList.className= "cards-list";
+  gameBoard.appendChild(cardsList);
   for (let color of colors) {
     // missing code here ...
     let newCard = document.createElement("div");
@@ -52,7 +55,6 @@ function createCards(colors) {
     newCard.addEventListener("click", handleCardClick);
 
     // Append card to our DOM
-    let cardsList = document.querySelector(".cards-list");
     cardsList.append(newCard);
   }
 }
@@ -75,43 +77,43 @@ function unFlipCard(card) {
 /** Handle clicking on a card: this could be first-card or second-card. */
 
 // track click and matched
-let clicks = 0;
-let allPossibleClicks = 0;
+
+//let allPossibleClicks = 0;
 let clickedCards = [];
 let matched = new Set();
 
 function handleCardClick(evt) {
   // ... you need to write this ...
   // change color if the click is less than 2 and it is not Matched
-  allPossibleClicks += 1; 
+  //allPossibleClicks += 1; 
+  
+  if (clickedCards.length===2)return;
   console.log("clicked but not flipped", evt.target.id);
   let isMatched = matched.has(evt.target.id);
-  if (clicks < 2 && !isMatched) {
+  if (clickedCards.length < 2 && !isMatched) {
     flipCard(evt.target);
-    
     clickedCards.push(evt.target);
-    clicks++;
     //prevent same card clicking 
     if (clickedCards.length === 2 && clickedCards[0].id === evt.target.id) {
-      clicks--;
-      allPossibleClicks -= 1;
+      //allPossibleClicks -= 1;
       clickedCards.pop();
     }
     console.log(clickedCards);
   }
-
-  if (clicks === 2 && allPossibleClicks === 2) {
+//&& allPossibleClicks === 2
+  if (clickedCards.length === 2 ) {
     //if cards are the same, flip
     let firstCard = clickedCards[0];
     let secondCard = clickedCards[1];
+    //if the colors don't match
     if (firstCard.classList[1] !== secondCard.classList[1]) {
       // set timeout and unflip 
       setTimeout(function () {
         unFlipCard(firstCard);
         unFlipCard(secondCard);
-        clicks = 0;
+        //reset 
         clickedCards = [];
-        allPossibleClicks = 0;
+        //allPossibleClicks = 0;
         console.log("Unflipped cards: ", firstCard, secondCard)
       }, FOUND_MATCH_WAIT_MSECS)
 
@@ -120,15 +122,28 @@ function handleCardClick(evt) {
     else {
       matched.add(firstCard.id);
       matched.add(secondCard.id);
-      clicks = 0;
       clickedCards = [];
-      allPossibleClicks = 0;
+      //allPossibleClicks = 0;
     }
-
+    createRestartBttn();
   }
 
 }
 
+// create restart button 
+function createRestartBttn(){
+  // if matched is same size as colors
+  if (matched.size=== COLORS.length){
+    let restart =document.createElement('button');
+    const gameBoard = document.getElementById("game");
+    gameBoard.appendChild(restart);
+    restart.innerText="Restart";
+    restart.addEventListener('click',function (evt){
+      resetBoard();
+      restart.remove();
+    })
+  }
+}
 
 // Starts a game
 function handleStartGame(evt) {
@@ -141,11 +156,15 @@ function handleStartGame(evt) {
 
   // OR just start the game and create the cards once this button is pressed
   const colors = shuffle(COLORS);
-
   createCards(colors);
+  evt.target.classList.add("invisible");
 }
 
 // reset game state
-function resetBoard() {
 
+function resetBoard() {
+  let cardsList = document.querySelector(".cards-list");
+  document.getElementById("game").removeChild(cardsList);
+  let newColors = shuffle(COLORS);
+  createCards(newColors);
 }
